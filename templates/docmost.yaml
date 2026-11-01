@@ -1,0 +1,9 @@
+url: http://localhost:3100
+credentials: ../docmost-stack/admin-credentials.txt
+space:
+  name: {{name}}
+  slug: {{name}}
+  description: Документация проекта {{name}}
+tree:
+  - title: Главная
+    source: README.md
