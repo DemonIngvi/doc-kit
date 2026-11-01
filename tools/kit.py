@@ -13,7 +13,7 @@ import subprocess
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 OWNER = "https://github.com/DemonIngvi"
-TOOL_REPOS = ("doc-architecture", "doc-gates")
+TOOL_REPOS = ("doc-architecture", "doc-gates", "doc-method")
 GITIGNORE = ".doc-kit/\n_bmad/\n.claude/skills/\nnode_modules/\n__pycache__/\n.env\n"
 
 
