@@ -21,6 +21,19 @@ def run(*command, cwd=None):
     subprocess.run(list(command), cwd=cwd, check=True, shell=command[0] in ("npm", "npx"))
 
 
+def configure_author(root):
+    """Без автора git не сделает коммит. Личная почта в репозиторий не попадает: берётся адрес noreply."""
+    has_author = subprocess.run(["git", "config", "user.email"], cwd=root, capture_output=True, text=True).stdout.strip()
+    if has_author:
+        return
+    done = subprocess.run(["gh", "api", "user", "--jq", ".login"], capture_output=True, text=True)
+    if done.returncode:
+        raise SystemExit("Задайте git config user.name и user.email или выполните gh auth login")
+    login = done.stdout.strip()
+    run("git", "config", "user.name", login, cwd=root)
+    run("git", "config", "user.email", f"{login}@users.noreply.github.com", cwd=root)
+
+
 def read_lock(path):
     """Файл версий простой: строки вида «имя: версия»."""
     return dict(line.split(": ", 1) for line in path.read_text(encoding="utf-8").splitlines() if ": " in line)
@@ -68,6 +81,7 @@ def init(args):
     (root / "README.md").write_text(
         (HERE / "templates" / "README.md").read_text(encoding="utf-8").replace("{{name}}", args.name), encoding="utf-8")
     run("git", "init", "-q", "-b", "main", cwd=root)
+    configure_author(root)
     sync(root, args.language)
     run("git", "add", "-A", cwd=root)
     run("git", "commit", "-q", "-m", f"Create {args.name} documentation project", cwd=root)
